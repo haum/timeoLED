@@ -36,8 +36,10 @@ session = requests.Session()
 
 session.headers.update({'User-Agent': 'timeoLED', 'Content-type': 'application/x-www-form-urlencoded'})
 
-session.get(URL)
+# session.get(URL)
 
 get_lines = "/v1/lines"
 
-result=session.get(URL+get_lines)                        
+result=session.get(URL+get_lines)
+
+print result.json()
