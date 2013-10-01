@@ -28,6 +28,8 @@
 """
 import requests
 import re
+import json
+
 # from bs4 import BeautifulSoup as BS
 
 
@@ -40,6 +42,6 @@ session.headers.update({'User-Agent': 'timeoLED', 'Content-type': 'application/x
 
 get_lines = "/v1/lines"
 
-result=session.get(URL+get_lines)
+result = session.get(URL+get_lines)
 
-print result.json()
+print json.dumps(result.json())
