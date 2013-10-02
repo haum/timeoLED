@@ -22,6 +22,8 @@
 #
 # 0. You just DO WHAT THE FUCK YOU WANT TO.
 #
+
+# la doc de l'api : http://timeoapi.readthedocs.org/fr/latest/index.html
  
 """
   
@@ -44,7 +46,7 @@ get_lines = "/v1/lines"
 
 result = session.get(URL+get_lines)
 
-print json.dumps(result.json())
+# print json.dumps(result.json())
 
 
 # donc, on commence par faire défiler les noms des lignes.
@@ -86,12 +88,17 @@ for k,v in lignes_tup:
     # foo > 1
     # bar > 2
     
-    reponse = raw_input("Afficher arrêt pour ligne : "+k.encode('utf8')+" ?")
+    reponse = raw_input("Afficher arrêt pour ligne : "+k.encode('utf8')+" ? (N/o) ")
     if reponse=='o':
         result = session.get(URL+"/v1/lines/"+v)
         donnes = json.loads(result.text)
+        
         print("Arrets : ")
         for i in donnes['stations'].values():
-            print(i)
+            reponse = raw_input("Afficher delais pour arret : "+i.encode('utf8')+" ? ")
+            if reponse=='o':
+                print(i)
+                break
         break
+        
     
