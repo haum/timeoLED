@@ -94,10 +94,15 @@ for k,v in lignes_tup:
         donnes = json.loads(result.text)
         
         print("Arrets : ")
-        for i in donnes['stations'].values():
-            reponse = raw_input("Afficher delais pour arret : "+i.encode('utf8')+" ? ")
+        for code,dico in donnes['stations'].items():
+            reponse = raw_input("Afficher delais pour arret : "+dico["name"].encode('utf8')+" ? ")
             if reponse=='o':
-                print(i)
+                print(code+" -> "+dico['name'])
+                result_passage = session.get(URL+"/v1/stations/"+str(code)+"/"+v)
+                donnes_passage = json.loads(result_passage.text)
+                print json.dumps(donnes_passage)
+                for idx,temps_pass in donnes_passage['stops'].items():
+                    print(temps_pass)
                 break
         break
         
