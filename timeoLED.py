@@ -3,7 +3,7 @@
 #
 # timeoLED.py
 #
-# Copyright © 2013 jerome B (jblbl) <jerome@jblb.no-ip.org>
+# Copyright © 2013 jerome B (jblb) <jerome@jblb.no-ip.org>
 #
 #
 # Distributed under WTFPL terms
@@ -32,78 +32,87 @@ import requests
 import re
 import json
 
-# from bs4 import BeautifulSoup as BS
+def get_line_station():
 
-
-URL="http://timeoapi.haum.org"
-session = requests.Session()
-
-session.headers.update({'User-Agent': 'timeoLED', 'Content-type': 'application/x-www-form-urlencoded'})
-
-# session.get(URL)
-
-get_lines = "/v1/lines"
-
-result = session.get(URL+get_lines)
-
-# print json.dumps(result.json())
-
-
-# donc, on commence par faire défiler les noms des lignes.
-# pour les besoins de l'API, le dictionnaire est mise dans : resultat['lines']
-
-# c'est une manière de faire que je trouve dégueu : je préfère récupérer le résultat sous
-# forme de string et le ramener à du python autrement (voir en dessous)
-#resultat = result.json()
-#lignes = resultat['lines'] # ici, lignes contient le dico kivabien
-
-resultat_txt = result.text
-resultat_json = json.loads(resultat_txt) # loads pour Load String
-lignes = resultat_json['lines']
-
-# voilà donc :) merci bien !
-
-
-lignes_tup = lignes.items()
-    # lignes.items() est un itérateur (une fausse liste pour faire simple)
-    # qui renvoie des tuple(2) c'est à dire des couples (clé,valeur) pour le
-    # dictionnaire :
-    # a = {"foo": 1, "bar": 2}
-    # for k,v in a.items(): print(k+" > "+str(v)) # v est un int
-    # foo > 1
-    # bar > 2
-
-    # on trie la liste par numero de ligne // 2nd element du tuple  !! tri aphabetique !!
-lignes_tup.sort(key=lambda tup: tup[1])
-
-# maintenant, on fait défiler les lignes et on demande à
-# l'utilisateur à chaque fois s'il veut les arrets de la ligne
-#for k,v in lignes.items():
-for k,v in lignes_tup:
-    # lignes.items() est un itérateur (une fausse liste pour faire simple)
-    # qui renvoie des tuple(2) c'est à dire des couples (clé,valeur) pour le
-    # dictionnaire :
-    # a = {"foo": 1, "bar": 2}
-    # for k,v in a.items(): print(k+" > "+str(v)) # v est un int
-    # foo > 1
-    # bar > 2
+    URL="http://timeoapi.haum.org"
+    session = requests.Session()
     
-    reponse = raw_input("Afficher arrêt pour ligne : "+k.encode('utf8')+" ? (N/o) ")
-    if reponse=='o':
-        result = session.get(URL+"/v1/lines/"+v)
-        donnes = json.loads(result.text)
-        
-        print("Arrets : ")
-        for code,dico in donnes['stations'].items():
-            reponse = raw_input("Afficher delais pour arret : "+dico["name"].encode('utf8')+" ? ")
-            if reponse=='o':
-                print(code+" -> "+dico['name'])
-                result_passage = session.get(URL+"/v1/stations/"+str(code)+"/"+v)
-                donnes_passage = json.loads(result_passage.text)
-                print json.dumps(donnes_passage)
-                for idx,temps_pass in donnes_passage['stops'].items():
-                    print(temps_pass)
-                break
-        break
-        
+    session.headers.update({'User-Agent': 'timeoLED', 'Content-type': 'application/x-www-form-urlencoded'})
     
+    # session.get(URL)
+    
+    get_lines = "/v1/lines"
+    
+    result = session.get(URL+get_lines)
+    
+    # print json.dumps(result.json())
+    
+    
+    # donc, on commence par faire défiler les noms des lignes.
+    # pour les besoins de l'API, le dictionnaire est mis dans : resultat['lines']
+    
+    # c'est une manière de faire que je trouve dégueu : je préfère récupérer le résultat sous
+    # forme de string et le ramener à du python autrement (voir en dessous)
+    #resultat = result.json()
+    #lignes = resultat['lines'] # ici, lignes contient le dico kivabien
+    
+    resultat_txt = result.text
+    resultat_json = json.loads(resultat_txt) # loads pour Load String
+    lignes = resultat_json['lines']
+    
+    # voilà donc :)
+    
+    
+    lignes_tup = lignes.items()
+        # lignes.items() est un itérateur (une fausse liste pour faire simple)
+        # qui renvoie des tuple(2) c'est à dire des couples (clé,valeur) pour le
+        # dictionnaire :
+        # a = {"foo": 1, "bar": 2}
+        # for k,v in a.items(): print(k+" > "+str(v)) # v est un int
+        # foo > 1
+        # bar > 2
+    
+        # on trie la liste par numero de ligne // 2nd element du tuple  !! tri aphabetique !!
+    lignes_tup.sort(key=lambda tup: tup[1])
+    
+    # maintenant, on fait défiler les lignes et on demande à
+    # l'utilisateur à chaque fois s'il veut les arrets de la ligne
+    #for k,v in lignes.items():
+    for k,v in lignes_tup:
+        # lignes.items() est un itérateur (une fausse liste pour faire simple)
+        # qui renvoie des tuple(2) c'est à dire des couples (clé,valeur) pour le
+        # dictionnaire :
+        # a = {"foo": 1, "bar": 2}
+        # for k,v in a.items(): print(k+" > "+str(v)) # v est un int
+        # foo > 1
+        # bar > 2
+        
+        reponse = raw_input("Afficher arrêt pour ligne : "+k.encode('utf8')+" ? (N/o) ")
+        if reponse=='o':
+            result = session.get(URL+"/v1/lines/"+v)
+            donnes = json.loads(result.text)
+            
+            print("Arrets : ")
+            for code,dico in donnes['stations'].items():
+                reponse = raw_input("Afficher delais pour arret : "+dico["name"].encode('utf8')+" ? ")
+                if reponse=='o':
+                    return k,v,dico["name"],code
+                    break
+            break
+
+
+def main():
+    (line,code_line,arret,code_arret)=get_line_station()
+
+    URL="http://timeoapi.haum.org"
+    session = requests.Session()
+    session.headers.update({'User-Agent': 'timeoLED', 'Content-type': 'application/x-www-form-urlencoded'})
+    
+
+    result_passage = session.get(URL+"/v1/stations/"+str(code_arret)+"/"+code_line)
+    donnes_passage = json.loads(result_passage.text)
+    print(line+" Prochains passages a l'arret "+arret+" dans")  
+    
+    for temps_pass in donnes_passage['stops']: print(temps_pass)
+
+if __name__=='__main__':main()
