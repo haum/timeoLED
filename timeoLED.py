@@ -31,6 +31,7 @@
 import requests
 import re
 import json
+import os
 
 def get_line_station():
 
@@ -111,8 +112,10 @@ def main():
 
     result_passage = session.get(URL+"/v1/stations/"+str(code_arret)+"/"+code_line)
     donnes_passage = json.loads(result_passage.text)
-    print(line+" Prochains passages a l'arret "+arret+" dans")  
-    
+    message_led = line+" Prochains passages a l'arret "+arret+" dans"
+    print(message_led)
     for temps_pass in donnes_passage['stops']: print(temps_pass)
+
+    os.system('python ./Py_affiche.py -p /dev/ttyUSB1 -m5 "{0}"'.format(message_led))
 
 if __name__=='__main__':main()
