@@ -112,10 +112,13 @@ def main():
 
     result_passage = session.get(URL+"/v1/stations/"+str(code_arret)+"/"+code_line)
     donnes_passage = json.loads(result_passage.text)
-    message_led = line+" Prochains passages a l'arret "+arret+" dans"
+    message_led = line+" Prochain passage a l'arret "+arret+" dans "+donnes_passage['stops'][0]
     print(message_led)
-    for temps_pass in donnes_passage['stops']: print(temps_pass)
+    # for temps_pass in donnes_passage['stops']: print(temps_pass)
+    # print(donnes_passage['stops'][0])
+    
 
-    os.system('python ./Py_affiche.py -p /dev/ttyUSB1 -m5 "{0}"'.format(message_led))
+    os.system('python ./Py_affiche.py -p /dev/tab_led -m5 "{0}"'.format(message_led))
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    main()
